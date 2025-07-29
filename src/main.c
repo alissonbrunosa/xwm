@@ -81,15 +81,15 @@ void handle_key_press(xcb_key_press_event_t* event) {
 }
 
 void handle_client_message(wm_desktop_t* desktop, xcb_client_message_event_t* event) {
-    if (event->type == desktop->atoms.WM_PROTOCOLS) {
+    if (event->type == WM_PROTOCOLS_ATOM) {
         xcb_atom_t protocol = event->data.data32[0];
-        if (protocol == desktop->atoms.WM_DELETE_WINDOW) {
+        if (protocol == WM_DELETE_WINDOW_ATOM) {
             fprintf(stderr, "Destroying window: %u\n", event->window);
             desktop_destroy_window(desktop, event->window);
             return;
         }
 
-        if (protocol == desktop->atoms.WM_TAKE_FOCUS) {
+        if (protocol == WM_TAKE_FOCUS_ATOM) {
             fprintf(stderr, "Taking focus for window: %u\n", event->window);
             xcb_set_input_focus(conn, XCB_INPUT_FOCUS_POINTER_ROOT, event->window, XCB_CURRENT_TIME);
             xcb_flush(conn);
@@ -140,10 +140,10 @@ void property_notify(xcb_property_notify_event_t* event) {
     }
 
 
-    fprintf(stderr, "Property notify for managed window: %u, atoms: %u\n", event->window, event->atom);
-    xcb_configure_window(conn, client->window, XCB_CONFIG_WINDOW, client->values);
-    fprintf(stderr, "Reconfigured window: %u with values: x=%d, y=%d, width=%d, height=%d, border_width=%d\n",
-           client->window, client->values[0], client->values[1], client->values[2], client->values[3], client->values[4]);
+   // fprintf(stderr, "Property notify for managed window: %u, atoms: %u\n", event->window, event->atom);
+   // xcb_configure_window(conn, client->window, XCB_CONFIG_WINDOW, client->values);
+   // fprintf(stderr, "Reconfigured window: %u with values: x=%d, y=%d, width=%d, height=%d, border_width=%d\n",
+   //        client->window, client->values[0], client->values[1], client->values[2], client->values[3], client->values[4]);
     xcb_flush(conn);
 }
 
@@ -174,6 +174,9 @@ int main(void) {
     desktop->root = screen->root;
     desktop->width = screen->width_in_pixels;
     desktop->height = screen->height_in_pixels;
+
+    desktop->layout->split_layout->max_width = desktop->width;
+    desktop->layout->split_layout->max_height = desktop->height;
     uint32_t white = screen->white_pixel;
     xcb_change_window_attributes(conn, desktop->root, XCB_CW_BACK_PIXEL, &white);
     xcb_clear_area(conn, 0, desktop->root, 0, 0, screen->width_in_pixels, screen->height_in_pixels);
@@ -309,26 +312,9 @@ int main(void) {
                 break;
             }
 
+            // TODO: Implement this handling
             case XCB_ENTER_NOTIFY: {
                 xcb_enter_notify_event_t* ev = (xcb_enter_notify_event_t*) event;
-
-                wm_client_t* focused_client = desktop_fetch_focused_client(desktop);
-                if (focused_client == NULL) {
-                    fprintf(stderr, "No focused client found\n");
-                    break;
-                }
-
-                if (focused_client->window == ev->event) {
-                    fprintf(stderr, "Focus already on window: %u\n", ev->event);
-                    break;
-                }
-
-                wm_client_t* new_focused_client = desktop_find_client_by_window(desktop, ev->event);
-                wm_coordinates_t new_focus_coords = desktop_fetch_coordinates_for_client(desktop, new_focused_client);
-                desktop->last_focus = desktop->focus;
-                desktop->focus = new_focus_coords;
-
-                desktop_update_focus_state(desktop, 1);
                 break;
             }
         }
@@ -337,6 +323,7 @@ int main(void) {
     }
 
     desktop_cleanup(desktop);
+    free(desktop);
 
     if (keysyms != NULL) {
         xcb_key_symbols_free(keysyms);

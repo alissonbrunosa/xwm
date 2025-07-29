@@ -9,7 +9,9 @@
 #include <xcb/xcb.h>
 #include <xcb/xcb_ewmh.h>
 #include <xcb/xcb_icccm.h>
-#include "wm_tile.h"
+
+#include "wm_client.h"
+#include "wm_layout.h"
 
 #define XCB_CONFIG_WINDOW_POSITION   (XCB_CONFIG_WINDOW_X | XCB_CONFIG_WINDOW_Y)
 #define XCB_CONFIG_WINDOW_DIMENSIONS (XCB_CONFIG_WINDOW_WIDTH | XCB_CONFIG_WINDOW_HEIGHT)
@@ -29,15 +31,6 @@
                            XCB_EVENT_MASK_PROPERTY_CHANGE  | \
                            XCB_EVENT_MASK_STRUCTURE_NOTIFY)
 
-#define CLIENT_UPDATE(type, field, new_value) \
-    do {                                      \
-        if ((type)->field != new_value) {     \
-            (type)->field = new_value;        \
-            (type)->updated = 1;              \
-        }                                     \
-    } while (0)
-
-
 #define WM_PROTOCOLS_ATOM (desktop->atoms[WM_PROTOCOLS])
 #define WM_DELETE_WINDOW_ATOM (desktop->atoms[WM_DELETE_WINDOW])
 #define WM_TAKE_FOCUS_ATOM (desktop->atoms[WM_TAKE_FOCUS])
@@ -52,19 +45,10 @@
 #define NET_WM_WINDOW_TYPE_NOTIFICATION_ATOM (desktop->atoms[NET_WM_WINDOW_TYPE_NOTIFICATION])
 
 
-typedef struct focus_coordinates {
-    int x;
-    int y;
-} wm_coordinates_t;
-
-
 typedef enum wm_atom wm_atom_t;
 typedef struct wm_desktop wm_desktop_t;
 
 wm_client_t* desktop_find_client_by_window(wm_desktop_t* desktop, xcb_window_t window);
-wm_client_t* desktop_fetch_client_at(wm_desktop_t* desktop, wm_coordinates_t coordinates);
-wm_client_t* desktop_fetch_client_at(wm_desktop_t* wm_desktop, wm_coordinates_t coordinates);
-wm_client_t* desktop_fetch_focused_client(wm_desktop_t* desktop);
 
 wm_desktop_t* allocate_desktop(xcb_connection_t* connection);
 void desktop_cleanup(wm_desktop_t* desktop);
@@ -75,21 +59,17 @@ void center_cursor(wm_desktop_t* desktop, wm_client_t* client);
 void desktop_update_wm_protocols(wm_desktop_t* desktop, wm_client_t* client);
 void desktop_update_wm_normal_hints(wm_desktop_t* desktop, wm_client_t* client);
 void desktop_update_wm_window_type(wm_desktop_t* desktop, wm_client_t* client);
-void desktop_update_focus_state(wm_desktop_t* desktop, int8_t flush);
 
 void desktop_move_client_right(wm_desktop_t* desktop);
 void desktop_move_client_left(wm_desktop_t* desktop);
 void desktop_swap_client_left(wm_desktop_t* desktop);
 void desktop_swap_client_right(wm_desktop_t* desktop);
-int wm_desktop_next_container_offset(wm_desktop_t* desktop);
-wm_coordinates_t desktop_fetch_coordinates_for_client(wm_desktop_t* desktop, wm_client_t* client);
 void desktop_close_focused_client(wm_desktop_t* desktop);
 void desktop_arrange(wm_desktop_t* desktop);
 void desktop_destroy_window(wm_desktop_t* desktop, xcb_window_t window);
 void desktop_configure_window(wm_desktop_t* desktop, wm_client_t* client);
 int should_manage_window(wm_desktop_t* desktop, xcb_window_t window, int8_t adopted);
 void desktop_manage_window(wm_desktop_t* desktop, xcb_window_t window, int8_t adopted);
-wm_client_t* desktop_find_client_by_window(wm_desktop_t* desktop, xcb_window_t window);
 
 enum wm_atom {
     WM_PROTOCOLS,
@@ -112,16 +92,13 @@ enum wm_atom {
 struct wm_desktop {
     xcb_window_t root;
     xcb_connection_t* conn;
-    wm_container_t* containers;
-    int size;
-    int capacity;
 
+    // TODO: Implementr an array for wm_client_t -> wm_client_array_t* floating_clients;
+    wm_layout_t* layout;
+
+    int32_t width; // screen width
+    int32_t height; // screen height
     xcb_atom_t atoms[ATOM_COUNT];
-
-    int32_t width;
-    int32_t height;
-    wm_coordinates_t focus;
-    wm_coordinates_t last_focus;
 };
 
 #endif // WM_DESKTOP_H
