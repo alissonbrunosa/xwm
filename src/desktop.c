@@ -2,6 +2,7 @@
 #include <assert.h>
 
 #include "xalloc.h"
+#include "logger.h"
 #include "desktop.h"
 
 wm_desktop_t* allocate_desktop(xcb_connection_t* conn) {
@@ -28,7 +29,7 @@ wm_desktop_t* allocate_desktop(xcb_connection_t* conn) {
 
     split->max_width = desktop->width;
     split->max_height = desktop->height;
-    layout->type = WM_LAYOUT_TILING;
+    layout->type = TILED_LAYOUT;
     layout->split_layout = split;
     fprintf(stderr, "######################### Layout = %p\n", (void*)layout);
     desktop->conn = conn;
@@ -235,9 +236,9 @@ void desktop_update_wm_protocols(wm_desktop_t* desktop, wm_client_t* client) {
     if (xcb_icccm_get_wm_protocols_reply(desktop->conn, cookie, &protocols, NULL)) {
         for (uint i = 0; i < protocols.atoms_len; ++i) {
             if (protocols.atoms[i] == WM_DELETE_WINDOW_ATOM) {
-                client->flags |= WM_CLIENT_WINDOW_DELETE;
+                client->flags |= CLIENT_WINDOW_DELETE;
             } else if (protocols.atoms[i] == WM_TAKE_FOCUS_ATOM) {
-                client->flags |= WM_CLIENT_TAKE_FOCUS;
+                client->flags |= CLIENT_TAKE_FOCUS;
             }
         }
 
@@ -248,15 +249,15 @@ void desktop_update_wm_protocols(wm_desktop_t* desktop, wm_client_t* client) {
     xcb_get_property_cookie_t hints_cookie = xcb_icccm_get_wm_hints(desktop->conn, client->window);
     if (xcb_icccm_get_wm_hints_reply(desktop->conn, hints_cookie, &hints, NULL)) {
         if (hints.flags & XCB_ICCCM_WM_HINT_INPUT && hints.input) {
-            client->flags |= WM_CLIENT_INPUT_HINT;
+            client->flags |= CLIENT_INPUT_HINT;
         }
     }
 
-    fprintf(stderr, "window %u protocols: %s%s%s\n", 
+    DEBUG("window %u protocols: %s%s%s\n", 
             client->window,
-            (client->flags & WM_CLIENT_WINDOW_DELETE) ? "WM_DELETE_WINDOW " : "",
-            (client->flags & WM_CLIENT_TAKE_FOCUS) ? "WM_TAKE_FOCUS " : "",
-            (client->flags & WM_CLIENT_INPUT_HINT) ? "INPUT_HINT " : ""
+            (client->flags & CLIENT_WINDOW_DELETE) ? "WM_DELETE_WINDOW " : "",
+            (client->flags & CLIENT_TAKE_FOCUS) ? "WM_TAKE_FOCUS " : "",
+            (client->flags & CLIENT_INPUT_HINT) ? "INPUT_HINT " : ""
     );
 }
 
@@ -311,7 +312,7 @@ void desktop_update_wm_window_type(wm_desktop_t* desktop, wm_client_t* client) {
                 xcb_atom_t atom = reply.atoms[i];
 
                 if (atom == NET_WM_WINDOW_TYPE_NORMAL_ATOM) {
-                    client->flags &= ~WM_CLIENT_FLOATING;
+                    client->flags &= ~CLIENT_FLOATING;
                     return;
                 }
 
@@ -324,7 +325,7 @@ void desktop_update_wm_window_type(wm_desktop_t* desktop, wm_client_t* client) {
                 );
 
                 if (floating) {
-                    client->flags |= WM_CLIENT_FLOATING;
+                    client->flags |= CLIENT_FLOATING;
                     return;
                 }
             }
@@ -366,7 +367,7 @@ void desktop_manage_window(wm_desktop_t* desktop, xcb_window_t window, int8_t ad
     // desktop_update_wm_state(desktop, client);
     // desktop_update_transient_for(desktop, client);
 
-    if (client->flags & WM_CLIENT_FLOATING) {
+    if (client->flags & CLIENT_FLOATING) {
         // TODO: Push to floating clients list
     } else {
         fprintf(stderr, "[USE] desktop=%p, desktop->layout=%p\n", desktop, desktop->layout);

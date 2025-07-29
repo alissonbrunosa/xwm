@@ -1,4 +1,4 @@
-#ifndef WM_LAYOUT_H
+#ifndef LAYOUT_H
 #define LAYOUT_H
 
 #include "layout/split.h"
@@ -9,9 +9,9 @@ typedef struct wm_layout wm_layout_t;
 
 struct wm_layout {
     enum {
-        WM_LAYOUT_TILING,
-        WM_LAYOUT_MONOCLE,
-        WM_LAYOUT_MASTER
+        TILED_LAYOUT,
+        SINGLE_LAYOUT,
+        MASTER_LAYOUT
     } type;
 
     union {
@@ -26,6 +26,3 @@ void wm_layout_add_client(wm_layout_t* layout, wm_client_t* client);
 wm_client_t* wm_layout_find_client_by_window(wm_layout_t* layout, xcb_window_t window);
 
 #endif
-
-
-

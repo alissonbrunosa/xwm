@@ -7,15 +7,15 @@ void wm_layout_apply(wm_layout_t* layout) {
     assert(layout != NULL);
 
     switch (layout->type) {
-        case WM_LAYOUT_TILING:
+        case TILED_LAYOUT:
             wm_split_layout_apply(layout->split_layout);
             break;
 
-        case WM_LAYOUT_MONOCLE:
+        case SINGLE_LAYOUT:
             // TODO: Implement monocle layout logic
             break;
 
-        case WM_LAYOUT_MASTER:
+        case MASTER_LAYOUT:
             // TODO: Implement master layout logic
             break;
 
@@ -34,7 +34,7 @@ wm_client_t* wm_layout_find_client_by_window(wm_layout_t* layout, xcb_window_t w
     }
 
     switch (layout->type) {
-        case WM_LAYOUT_TILING:
+        case TILED_LAYOUT:
             return wm_split_layout_find_client(layout->split_layout, window);
 
         default:
@@ -52,7 +52,7 @@ void wm_layout_render(xcb_connection_t* conn, wm_layout_t* layout) {
     }
 
     switch (layout->type) {
-        case WM_LAYOUT_TILING:
+        case TILED_LAYOUT:
             wm_split_layout_render(conn, layout->split_layout);
             break;
     }
@@ -67,7 +67,7 @@ void wm_layout_add_client(wm_layout_t* layout, wm_client_t* client) {
     }
 
     switch (layout->type) {
-        case WM_LAYOUT_TILING: {
+        case TILED_LAYOUT: {
             wm_split_layout_add_client(layout->split_layout, client);
             break;
         }

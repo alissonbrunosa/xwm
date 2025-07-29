@@ -114,15 +114,15 @@ void handle_client_message(wm_desktop_t* desktop, xcb_client_message_event_t* ev
         if (state == ewmh->_NET_WM_STATE_FULLSCREEN) {
             switch (action) {
                 case XCB_EWMH_WM_STATE_ADD:
-                    client->flags |= WM_CLIENT_FULLSCREEN;
+                    client->flags |= CLIENT_FULLSCREEN;
                     fprintf(stderr, "Enabling fullscreen for window: %u\n", event->window);
                     break;
                 case XCB_EWMH_WM_STATE_REMOVE:
                     fprintf(stderr, "Disabling fullscreen for window: %u\n", event->window);
-                    client->flags &= ~WM_CLIENT_FULLSCREEN;
+                    client->flags &= ~CLIENT_FULLSCREEN;
                     break;
                 case XCB_EWMH_WM_STATE_TOGGLE:
-                    client->flags ^= WM_CLIENT_FULLSCREEN;
+                    client->flags ^= CLIENT_FULLSCREEN;
                     fprintf(stderr, "Toggling fullscreen for window: %u\n", event->window);
                     break;
             }

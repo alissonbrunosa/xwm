@@ -43,11 +43,11 @@ void render_node(xcb_connection_t* conn, wm_node_t* node) {
             xcb_void_cookie_t cookie = xcb_configure_window(conn, client->window, XCB_CONFIG_WINDOW, values);
             DEBUG("Window configured! Cookie sequence: %d\n", cookie.sequence);
 
-            if (client->flags & WM_CLIENT_MAPPED) {
+            if (client->flags & CLIENT_MAPPED) {
                 return;
             }
 
-            client->flags |= WM_CLIENT_MAPPED;
+            client->flags |= CLIENT_MAPPED;
             xcb_map_window(conn, client->window);
             break;
         }

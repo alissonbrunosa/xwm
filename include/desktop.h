@@ -1,4 +1,4 @@
-#ifndef WM_DESKTOP_H
+#ifndef DESKTOP_H
 #define DESKTOP_H
 
 #include <X11/Xlib.h>

@@ -1,10 +1,11 @@
-#ifndef WM_NODE_H
+#ifndef NODE_H
 #define NODE_H
 
 #include <xcb/xcb.h>
 
 #include "client.h"
 
+typedef struct geometry geometry_t;
 typedef struct wm_node wm_node_t;
 typedef enum wm_split wm_split_t;
 typedef struct wm_split_layout wm_split_layout_t;
@@ -20,6 +21,14 @@ struct wm_split_layout {
 
     uint32_t max_width;
     uint32_t max_height;
+};
+
+
+struct geometry {
+    uint32_t x;
+    uint32_t y;
+    uint32_t width;
+    uint32_t height;
 };
 
 struct wm_node {
@@ -39,12 +48,7 @@ struct wm_node {
         } children;
     };
 
-    struct {
-        int x;
-        int y;
-        int width;
-        int height;
-    } geometry;
+    geometry_t geometry;
 };
 
 wm_split_layout_t* wm_layout_create(void);
