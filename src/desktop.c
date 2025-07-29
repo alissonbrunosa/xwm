@@ -1,22 +1,24 @@
 #include <stdio.h>
 #include <assert.h>
+
+#include "xalloc.h"
 #include "wm_desktop.h"
 
 wm_desktop_t* allocate_desktop(xcb_connection_t* conn) {
-    wm_desktop_t* desktop = (wm_desktop_t*) calloc(1, sizeof(wm_desktop_t));
+    wm_desktop_t* desktop = (wm_desktop_t*) xcalloc(1, sizeof(wm_desktop_t));
     if (desktop == NULL) {
         fprintf(stderr, "Failed to allocate memory for split layout\n");
         return NULL;
     }
 
-    wm_layout_t* layout = calloc(1, sizeof(wm_layout_t));
+    wm_layout_t* layout = xcalloc(1, sizeof(wm_layout_t));
     if (layout == NULL) {
         fprintf(stderr, "Failed to allocate memory for split layout\n");
         free(desktop);
         return NULL;
     }
 
-    wm_split_layout_t* split = calloc(1, sizeof(wm_split_layout_t));
+    wm_split_layout_t* split = xcalloc(1, sizeof(wm_split_layout_t));
     if (split == NULL) {
         fprintf(stderr, "Failed to allocate memory for split layout\n");
         free(desktop);
@@ -351,7 +353,7 @@ void desktop_manage_window(wm_desktop_t* desktop, xcb_window_t window, int8_t ad
     //    return;
     //}
 
-    client = (wm_client_t*) calloc(1, sizeof(wm_client_t));
+    client = (wm_client_t*) xcalloc(1, sizeof(wm_client_t));
     if (client == NULL) {
         fprintf(stderr, "Failed to allocate memory for client\n");
         return;

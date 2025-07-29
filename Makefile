@@ -3,9 +3,9 @@ CC      = gcc
 CFLAGS  = -Wall -Wextra -g -Iinclude $(shell pkg-config --cflags xcb xcb-icccm xcb-ewmh xcb-keysyms x11)
 LDFLAGS = $(shell pkg-config --libs xcb xcb-icccm xcb-ewmh xcb-keysyms x11)
 
-# Source and build files
-SRC     = $(wildcard src/*.c)
-OBJ     = $(SRC:src/%.c=build/%.o)
+# Source and build files (recursive)
+SRC     := $(shell find src -name '*.c')
+OBJ     := $(patsubst src/%.c,build/%.o,$(SRC))
 TARGET  = xwm
 
 # Default target
@@ -15,13 +15,10 @@ all: $(TARGET)
 $(TARGET): $(OBJ)
 	$(CC) $(OBJ) -o $@ $(LDFLAGS)
 
-# Build object files
-build/%.o: src/%.c | build
+# Build object files, create build subdirs as needed
+build/%.o: src/%.c
+	@mkdir -p $(dir $@)
 	$(CC) $(CFLAGS) -c $< -o $@
-
-# Create build dir if missing
-build:
-	mkdir -p build
 
 # Clean all build artifacts
 clean:

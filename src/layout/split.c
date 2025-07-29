@@ -2,8 +2,11 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "layout/split.h"
 #include "xcb/xcb.h"
+
+#include "xalloc.h"
+#include "wm_logger.h"
+#include "layout/split.h"
 
 #define XCB_CONFIG_WINDOW_POSITION   (XCB_CONFIG_WINDOW_X | XCB_CONFIG_WINDOW_Y)
 #define XCB_CONFIG_WINDOW_DIMENSIONS (XCB_CONFIG_WINDOW_WIDTH | XCB_CONFIG_WINDOW_HEIGHT)
@@ -12,11 +15,8 @@
 wm_node_t* wm_node_find_by_window(wm_node_t* node, xcb_window_t window);
 
 
-int max_depth2 = 0;
-int deep_count = 0;
-
 wm_split_layout_t* wm_layout_create(void) {
-    wm_split_layout_t* layout = calloc(1, sizeof(wm_split_layout_t));
+    wm_split_layout_t* layout = xcalloc(1, sizeof(wm_split_layout_t));
     if (!layout) {
         return NULL;
     }
@@ -40,19 +40,15 @@ void render_node(xcb_connection_t* conn, wm_node_t* node) {
             values[4] = 3;
 
             wm_client_t* client = node->client;
-            xcb_configure_window(conn, client->window, XCB_CONFIG_WINDOW, values);
+            xcb_void_cookie_t cookie = xcb_configure_window(conn, client->window, XCB_CONFIG_WINDOW, values);
+            DEBUG("Window configured! Cookie sequence: %d\n", cookie.sequence);
 
             if (client->flags & WM_CLIENT_MAPPED) {
-                fprintf(stderr, "########### Client %u is already mapped\n", client->window);
                 return;
             }
 
             client->flags |= WM_CLIENT_MAPPED;
             xcb_map_window(conn, client->window);
-            fprintf(stderr, "########### Mapping client %u at (%d, %d) with size (%d, %d)\n",
-                   client->window, node->geometry.x, node->geometry.y,
-                   node->geometry.width, node->geometry.height);
-
             break;
         }
 
@@ -71,19 +67,9 @@ void wm_split_layout_apply(wm_split_layout_t* layout) {
     assert(layout != NULL);
 
     wm_layout_calculate_geometry(layout->root, 0, 0, layout->max_width, layout->max_height);
-    deep_count = 0;
 }
 
-
 void print_tree(wm_node_t* node, int depth) {
-    max_depth2+=1;
-
-    if (max_depth2 > 100) {
-        fprintf(stderr, "Too deep recursion detected, aborting tree print. %d\n", max_depth2);
-        max_depth2 = 0;
-        return;
-    }
-
     if (node == NULL) {
         return;
     }
@@ -172,18 +158,10 @@ void wm_split_layout_add_client(wm_split_layout_t* layout, wm_client_t* client) 
     }
 
     print_tree(layout->root, 0);
-    max_depth2 = 0;
 }
 
 
 void wm_layout_calculate_geometry(wm_node_t* node, int x, int y, int width, int height) {
-    deep_count++;
-    if (deep_count > 100) {
-        fprintf(stderr, "Too deep recursion detected, aborting layout calculation. %d\n", deep_count);
-        deep_count = 0;
-        return;
-    }
-
     if (node == NULL) {
         return;
     }
@@ -290,7 +268,7 @@ void wm_node_insert(wm_node_t* root, wm_node_t* new_node) {
 }
 
 wm_node_t* wm_node_create_leaf(wm_client_t* client) {
-    wm_node_t* node = calloc(1, sizeof(wm_node_t));
+    wm_node_t* node = xcalloc(1, sizeof(wm_node_t));
     if (node == NULL) {
         return NULL;
     }
@@ -310,7 +288,7 @@ wm_node_t* wm_node_create_leaf(wm_client_t* client) {
 }
 
 wm_node_t* wm_node_create_parent(wm_split_t split) {
-    wm_node_t* node = calloc(1, sizeof(wm_node_t));
+    wm_node_t* node = xcalloc(1, sizeof(wm_node_t));
     if (node == NULL) {
         return NULL;
     }

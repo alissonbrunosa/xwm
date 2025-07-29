@@ -10,6 +10,8 @@
 #include <xcb/xcb_icccm.h>
 #include <xcb/xcb_keysyms.h>
 
+#include "xalloc.h"
+#include "wm_logger.h"
 #include "wm_desktop.h"
 
 wm_desktop_t* desktop;
@@ -148,6 +150,8 @@ void property_notify(xcb_property_notify_event_t* event) {
 }
 
 int main(void) {
+    redirect_stderr();
+
     conn = xcb_connect(NULL, NULL);
     if (xcb_connection_has_error(conn)) {
         fprintf(stderr, "Cannot open display\n");
@@ -161,7 +165,7 @@ int main(void) {
         return 1;
     }
 
-    ewmh = calloc(1, sizeof(xcb_ewmh_connection_t));
+    ewmh = xcalloc(1, sizeof(xcb_ewmh_connection_t));
     xcb_intern_atom_cookie_t* cookies = xcb_ewmh_init_atoms(conn, ewmh);
     xcb_ewmh_init_atoms_replies(ewmh, cookies, NULL);
 
