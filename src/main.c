@@ -11,8 +11,8 @@
 #include <xcb/xcb_keysyms.h>
 
 #include "xalloc.h"
-#include "wm_logger.h"
-#include "wm_desktop.h"
+#include "logger.h"
+#include "desktop.h"
 
 wm_desktop_t* desktop;
 xcb_connection_t* conn;

@@ -1,4 +1,4 @@
-#include "wm_logger.h"
+#include "logger.h"
 
 void log_message(const char* level, const char* format, ...) {
     fprintf(stderr, "[%s] ", level);

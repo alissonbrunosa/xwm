@@ -10,8 +10,8 @@
 #include <xcb/xcb_ewmh.h>
 #include <xcb/xcb_icccm.h>
 
-#include "wm_client.h"
-#include "wm_layout.h"
+#include "client.h"
+#include "layout.h"
 
 #define XCB_CONFIG_WINDOW_POSITION   (XCB_CONFIG_WINDOW_X | XCB_CONFIG_WINDOW_Y)
 #define XCB_CONFIG_WINDOW_DIMENSIONS (XCB_CONFIG_WINDOW_WIDTH | XCB_CONFIG_WINDOW_HEIGHT)

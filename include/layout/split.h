@@ -3,7 +3,7 @@
 
 #include <xcb/xcb.h>
 
-#include "wm_client.h"
+#include "client.h"
 
 typedef struct wm_node wm_node_t;
 typedef enum wm_split wm_split_t;

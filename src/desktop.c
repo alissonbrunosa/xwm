@@ -2,7 +2,7 @@
 #include <assert.h>
 
 #include "xalloc.h"
-#include "wm_desktop.h"
+#include "desktop.h"
 
 wm_desktop_t* allocate_desktop(xcb_connection_t* conn) {
     wm_desktop_t* desktop = (wm_desktop_t*) xcalloc(1, sizeof(wm_desktop_t));

@@ -1,6 +1,6 @@
 #include <stdlib.h>
 
-#include "wm_logger.h"
+#include "logger.h"
 
 void* xcalloc(size_t nmemb, size_t size) {
     void* ptr = calloc(nmemb, size);

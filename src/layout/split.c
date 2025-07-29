@@ -5,7 +5,7 @@
 #include "xcb/xcb.h"
 
 #include "xalloc.h"
-#include "wm_logger.h"
+#include "logger.h"
 #include "layout/split.h"
 
 #define XCB_CONFIG_WINDOW_POSITION   (XCB_CONFIG_WINDOW_X | XCB_CONFIG_WINDOW_Y)

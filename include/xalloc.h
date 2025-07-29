@@ -3,7 +3,7 @@
 
 #include <stdlib.h>
 
-#include "wm_logger.h"
+#include "logger.h"
 
 // Memory allocation functions with error checking
 

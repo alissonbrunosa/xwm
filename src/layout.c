@@ -1,7 +1,7 @@
 #include <assert.h>
 #include <stdio.h>
 
-#include "wm_layout.h"
+#include "layout.h"
 
 void wm_layout_apply(wm_layout_t* layout) {
     assert(layout != NULL);
