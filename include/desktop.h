@@ -1,5 +1,5 @@
 #ifndef WM_DESKTOP_H
-#define WM_DESKTOP_H
+#define DESKTOP_H
 
 #include <X11/Xlib.h>
 #include <stdint.h>

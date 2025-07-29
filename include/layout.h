@@ -1,5 +1,5 @@
 #ifndef WM_LAYOUT_H
-#define WM_LAYOUT_H
+#define LAYOUT_H
 
 #include "layout/split.h"
 

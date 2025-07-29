@@ -1,5 +1,5 @@
 #ifndef WM_NODE_H
-#define WM_NODE_H
+#define NODE_H
 
 #include <xcb/xcb.h>
 

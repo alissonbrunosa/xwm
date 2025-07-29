@@ -1,16 +1,16 @@
 #ifndef WM_CLIENT_H
-#define WM_CLIENT_H
+#define CLIENT_H
 
 #include <xcb/xcb.h>
 
-#define WM_CLIENT_MAPPED        (1 << 0)
-#define WM_CLIENT_FLOATING      (1 << 1)
-#define WM_CLIENT_FULLSCREEN    (1 << 2)
-#define WM_CLIENT_INITIALIZED   (1 << 3)
-#define WM_CLIENT_INPUT_HINT    (1 << 4)
-#define WM_CLIENT_CHANGED       (1 << 5)
-#define WM_CLIENT_TAKE_FOCUS    (1 << 6)
-#define WM_CLIENT_WINDOW_DELETE (1 << 7)
+#define CLIENT_MAPPED        (1 << 0)
+#define CLIENT_FLOATING      (1 << 1)
+#define CLIENT_FULLSCREEN    (1 << 2)
+#define CLIENT_INITIALIZED   (1 << 3)
+#define CLIENT_INPUT_HINT    (1 << 4)
+#define CLIENT_CHANGED       (1 << 5)
+#define CLIENT_TAKE_FOCUS    (1 << 6)
+#define CLIENT_WINDOW_DELETE (1 << 7)
 
 #define CLIENT_UPDATE(client, field, new_value) \
     do {                                        \

@@ -1,5 +1,5 @@
 #ifndef WM_LOGGER_H
-#define WM_LOGGER_H
+#define LOGGER_H
 
 #include <stdarg.h>
 #include <stdio.h>
